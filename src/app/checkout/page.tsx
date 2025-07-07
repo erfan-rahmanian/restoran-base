@@ -10,11 +10,14 @@ import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export default function CheckoutPage() {
-  const { cart, getCartTotal, clearCart, user, loading } = useAppContext();
+  const { cart, getCartTotal, user, loading } = useAppContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const total = getCartTotal();
@@ -30,7 +33,6 @@ export default function CheckoutPage() {
     }
   }, [user, loading, router, toast]);
 
-  // این شرط باید بعد از بررسی کاربر باشد
   useEffect(() => {
     if (!loading && user && cart.length === 0) {
       router.push('/menu');
@@ -47,14 +49,64 @@ export default function CheckoutPage() {
     );
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // در آینده اینجا منطق ارسال سفارش به سرور قرار می گیرد
-    toast({
-        title: "سفارش ثبت شد!",
-        description: "سفارش شما با موفقیت ثبت شد.",
-    });
-    router.push('/confirmation');
+    if (!user) {
+      toast({
+        title: 'خطا',
+        description: 'برای ثبت سفارش باید وارد شوید.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    const formData = new FormData(e.currentTarget);
+    const finalTotal = total * 1.09;
+
+    const orderData = {
+      userId: user.uid,
+      createdAt: serverTimestamp(),
+      items: cart.map(({ menuItem, quantity }) => ({
+        id: menuItem.id,
+        name: menuItem.name,
+        price: menuItem.price,
+        quantity: quantity,
+      })),
+      total: parseFloat(finalTotal.toFixed(2)),
+      status: 'در حال آماده سازی',
+      deliveryDetails: {
+        email: formData.get('email') as string,
+        phone: formData.get('phone') as string,
+        name: formData.get('name') as string,
+        address: formData.get('address') as string,
+        city: formData.get('city') as string,
+        state: formData.get('state') as string,
+        zip: formData.get('zip') as string,
+      },
+      paymentMethod: formData.get('payment') as string,
+    };
+
+    try {
+      await addDoc(collection(db, 'orders'), orderData);
+      
+      toast({
+          title: "سفارش ثبت شد!",
+          description: "سفارش شما با موفقیت ثبت شد و در پایگاه داده ذخیره شد.",
+      });
+
+      router.push('/confirmation');
+
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      toast({
+        title: 'خطا در ثبت سفارش',
+        description: 'مشکلی در ذخیره سفارش شما پیش آمد. لطفاً دوباره تلاش کنید.',
+        variant: 'destructive',
+      });
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
   return (
@@ -70,11 +122,11 @@ export default function CheckoutPage() {
               <CardContent className="space-y-4">
                 <div className="grid gap-2">
                   <Label htmlFor="email">ایمیل</Label>
-                  <Input id="email" type="email" placeholder="you@example.com" required defaultValue={user.email || ''} />
+                  <Input id="email" name="email" type="email" placeholder="you@example.com" required defaultValue={user.email || ''} />
                 </div>
                  <div className="grid gap-2">
                   <Label htmlFor="phone">شماره تلفن</Label>
-                  <Input id="phone" type="tel" placeholder="۰۹۱۲۳۴۵۶۷۸۹" required />
+                  <Input id="phone" name="phone" type="tel" placeholder="۰۹۱۲۳۴۵۶۷۸۹" required />
                 </div>
               </CardContent>
             </Card>
@@ -86,24 +138,24 @@ export default function CheckoutPage() {
               <CardContent className="space-y-4">
                 <div className="grid gap-2">
                   <Label htmlFor="name">نام کامل</Label>
-                  <Input id="name" placeholder="علی علوی" required defaultValue={user.displayName || ''}/>
+                  <Input id="name" name="name" placeholder="علی علوی" required defaultValue={user.displayName || ''}/>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="address">آدرس</Label>
-                  <Input id="address" placeholder="خ اصلی ۱۲۳" required />
+                  <Input id="address" name="address" placeholder="خ اصلی ۱۲۳" required />
                 </div>
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="city">شهر</Label>
-                    <Input id="city" placeholder="شهر غذا" required />
+                    <Input id="city" name="city" placeholder="شهر غذا" required />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="state">استان</Label>
-                    <Input id="state" placeholder="تهران" required />
+                    <Input id="state" name="state" placeholder="تهران" required />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="zip">کد پستی</Label>
-                    <Input id="zip" placeholder="12345" required />
+                    <Input id="zip" name="zip" placeholder="12345" required />
                   </div>
                 </div>
               </CardContent>
@@ -114,7 +166,7 @@ export default function CheckoutPage() {
                     <CardTitle className="font-headline text-2xl">پرداخت</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <RadioGroup defaultValue="card" className="space-y-2">
+                    <RadioGroup defaultValue="card" name="payment" className="space-y-2">
                         <div className="flex items-center space-x-2 space-x-reverse">
                             <RadioGroupItem value="card" id="card" />
                             <Label htmlFor="card">کارت اعتباری/بانکی</Label>
@@ -169,8 +221,9 @@ export default function CheckoutPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button type="submit" size="lg" className="w-full">
-                  ثبت سفارش
+                <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+                   {isSubmitting && <Loader2 className="me-2 h-4 w-4 animate-spin" />}
+                   {isSubmitting ? 'در حال ثبت...' : 'ثبت سفارش'}
                 </Button>
               </CardFooter>
             </Card>
