@@ -2,11 +2,20 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Menu as MenuIcon, ChefHat } from 'lucide-react';
+import { ShoppingCart, Menu as MenuIcon, ChefHat, User as UserIcon } from 'lucide-react';
 import { CartSheet } from '@/components/cart/cart-sheet';
-import { useCart } from '@/context/app-context';
+import { useAppContext } from '@/context/app-context';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import { useState } from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from '../ui/skeleton';
 
 const navLinks = [
   { href: '/menu', label: 'منو' },
@@ -16,10 +25,15 @@ const navLinks = [
 ];
 
 export function Header() {
-  const { cart } = useCart();
+  const { cart, user, loading, logOut } = useAppContext();
   const [isCartOpen, setCartOpen] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  const handleLogout = async () => {
+    await logOut();
+    setMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -47,12 +61,18 @@ export function Header() {
                     ))}
                   </nav>
                    <div className="flex flex-col gap-2 mt-4">
-                     <Link href="/login" passHref>
-                      <Button variant="outline" className="w-full" onClick={() => setMobileMenuOpen(false)}>ورود</Button>
-                    </Link>
-                    <Link href="/signup" passHref>
-                      <Button className="w-full" onClick={() => setMobileMenuOpen(false)}>ثبت نام</Button>
-                    </Link>
+                    {user ? (
+                      <Button variant="outline" className="w-full" onClick={handleLogout}>خروج</Button>
+                    ) : (
+                     <>
+                      <Link href="/login" passHref>
+                        <Button variant="outline" className="w-full" onClick={() => setMobileMenuOpen(false)}>ورود</Button>
+                      </Link>
+                      <Link href="/signup" passHref>
+                        <Button className="w-full" onClick={() => setMobileMenuOpen(false)}>ثبت نام</Button>
+                      </Link>
+                     </>
+                    )}
                    </div>
                 </div>
               </SheetContent>
@@ -64,7 +84,6 @@ export function Header() {
             </Link>
           </div>
 
-
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
             {navLinks.map(link => (
               <Link key={link.href} href={link.href} className="transition-colors hover:text-primary">
@@ -74,12 +93,40 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <Link href="/signup" passHref>
-              <Button className="hidden sm:inline-flex">ثبت نام</Button>
-            </Link>
-            <Link href="/login" passHref>
-              <Button variant="outline" className="hidden sm:inline-flex">ورود</Button>
-            </Link>
+             {loading ? (
+              <Skeleton className="hidden h-10 w-24 sm:inline-flex" />
+            ) : user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="hidden sm:inline-flex" size="icon">
+                    <UserIcon className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>حساب من</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem disabled>
+                    {user.displayName || 'کاربر'}
+                  </DropdownMenuItem>
+                   <DropdownMenuItem disabled className="text-xs text-muted-foreground">
+                    {user.email}
+                  </DropdownMenuItem>
+                   <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logOut}>
+                    خروج
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Link href="/signup" passHref>
+                  <Button className="hidden sm:inline-flex">ثبت نام</Button>
+                </Link>
+                <Link href="/login" passHref>
+                  <Button variant="outline" className="hidden sm:inline-flex">ورود</Button>
+                </Link>
+              </>
+            )}
             <Button variant="ghost" size="icon" className="relative" onClick={() => setCartOpen(true)}>
               <ShoppingCart className="h-5 w-5" />
               {totalItems > 0 && (

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { useCart } from '@/context/app-context';
+import { useAppContext } from '@/context/app-context';
 import type { MenuItem } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 
@@ -19,7 +19,7 @@ const filterTagTranslations: Record<string, string> = {
 
 
 export function MenuItemCard({ item }: MenuItemCardProps) {
-  const { addToCart } = useCart();
+  const { addToCart } = useAppContext();
 
   return (
     <Card className="flex flex-col h-full overflow-hidden border-2 shadow-lg hover:shadow-2xl transition-shadow duration-300">

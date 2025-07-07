@@ -1,19 +1,20 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useCart } from '@/context/app-context';
+import { useAppContext } from '@/context/app-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { CheckCircle } from 'lucide-react';
 
 export default function ConfirmationPage() {
-  const { cart, clearCart } = useCart();
+  const { cart, clearCart } = useAppContext();
 
   useEffect(() => {
     if (cart.length > 0) {
       clearCart();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

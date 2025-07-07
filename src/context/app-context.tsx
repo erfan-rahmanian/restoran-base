@@ -1,8 +1,20 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import type { CartItem, MenuItem } from '@/lib/types';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import type { CartItem, MenuItem, AppUser } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { auth, db } from '@/lib/firebase';
+import { 
+  onAuthStateChanged,
+  User as FirebaseUser,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  GoogleAuthProvider,
+  signInWithPopup
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+
 
 interface AppContextType {
   cart: CartItem[];
@@ -11,13 +23,47 @@ interface AppContextType {
   updateCartQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
   getCartTotal: () => number;
+  user: AppUser | null;
+  loading: boolean;
+  signUp: (name: string, email: string, pass: string) => Promise<void>;
+  logIn: (email: string, pass: string) => Promise<void>;
+  logOut: () => Promise<void>;
+  googleSignIn: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        const userRef = doc(db, 'users', firebaseUser.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          setUser(userSnap.data() as AppUser);
+        } else {
+          // برای کاربرانی که برای اولین بار با گوگل وارد می شوند، یک سند ایجاد کنید
+          const newUser: AppUser = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+          };
+          await setDoc(userRef, newUser);
+          setUser(newUser);
+        }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const addToCart = (item: MenuItem, quantity = 1) => {
     setCart((prevCart) => {
@@ -66,6 +112,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return cart.reduce((total, item) => total + item.menuItem.price * item.quantity, 0);
   };
 
+  const signUp = async (name: string, email: string, pass: string) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+    const firebaseUser = userCredential.user;
+    const newUser: AppUser = {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      displayName: name,
+    };
+    await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
+    // onAuthStateChanged will handle setting the user state
+  };
+
+  const logIn = async (email: string, pass: string) => {
+    await signInWithEmailAndPassword(auth, email, pass);
+  };
+
+  const googleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+  };
+
+  const logOut = async () => {
+    await signOut(auth);
+  };
+
   const value = {
     cart,
     addToCart,
@@ -73,15 +144,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     updateCartQuantity,
     clearCart,
     getCartTotal,
+    user,
+    loading,
+    signUp,
+    logIn,
+    logOut,
+    googleSignIn,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
-export function useCart() {
+export function useAppContext() {
   const context = useContext(AppContext);
   if (context === undefined) {
-    throw new Error('useCart باید در داخل یک AppProvider استفاده شود');
+    throw new Error('useAppContext باید در داخل یک AppProvider استفاده شود');
   }
   return context;
 }

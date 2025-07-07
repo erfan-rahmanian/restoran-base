@@ -9,7 +9,7 @@ import {
   SheetClose,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { useCart } from '@/context/app-context';
+import { useAppContext } from '@/context/app-context';
 import Image from 'next/image';
 import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
 import { Separator } from '../ui/separator';
@@ -21,7 +21,7 @@ interface CartSheetProps {
 }
 
 export function CartSheet({ isOpen, onOpenChange }: CartSheetProps) {
-  const { cart, updateCartQuantity, removeFromCart, getCartTotal } = useCart();
+  const { cart, updateCartQuantity, removeFromCart, getCartTotal } = useAppContext();
   const total = getCartTotal();
 
   return (

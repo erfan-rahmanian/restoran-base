@@ -1,6 +1,6 @@
 'use client';
 
-import { useCart } from '@/context/app-context';
+import { useAppContext } from '@/context/app-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,20 +10,46 @@ import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
+import { useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export default function CheckoutPage() {
-  const { cart, getCartTotal, clearCart } = useCart();
+  const { cart, getCartTotal, clearCart, user, loading } = useAppContext();
   const router = useRouter();
   const { toast } = useToast();
   const total = getCartTotal();
 
-  if (cart.length === 0) {
-    router.push('/menu');
-    return null;
+  useEffect(() => {
+    if (!loading && !user) {
+      toast({
+        title: 'نیاز به ورود',
+        description: 'برای ادامه پرداخت لطفاً وارد شوید.',
+        variant: 'destructive',
+      });
+      router.push('/login');
+    }
+  }, [user, loading, router, toast]);
+
+  // این شرط باید بعد از بررسی کاربر باشد
+  useEffect(() => {
+    if (!loading && user && cart.length === 0) {
+      router.push('/menu');
+    }
+  }, [cart, user, loading, router]);
+
+
+  if (loading || !user) {
+    return (
+      <div className="container py-12 md:py-16 text-center flex flex-col items-center justify-center min-h-[50vh]">
+        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">در حال بارگذاری اطلاعات کاربری...</p>
+      </div>
+    );
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // در آینده اینجا منطق ارسال سفارش به سرور قرار می گیرد
     toast({
         title: "سفارش ثبت شد!",
         description: "سفارش شما با موفقیت ثبت شد.",
@@ -44,7 +70,7 @@ export default function CheckoutPage() {
               <CardContent className="space-y-4">
                 <div className="grid gap-2">
                   <Label htmlFor="email">ایمیل</Label>
-                  <Input id="email" type="email" placeholder="you@example.com" required />
+                  <Input id="email" type="email" placeholder="you@example.com" required defaultValue={user.email || ''} />
                 </div>
                  <div className="grid gap-2">
                   <Label htmlFor="phone">شماره تلفن</Label>
@@ -60,7 +86,7 @@ export default function CheckoutPage() {
               <CardContent className="space-y-4">
                 <div className="grid gap-2">
                   <Label htmlFor="name">نام کامل</Label>
-                  <Input id="name" placeholder="علی علوی" required />
+                  <Input id="name" placeholder="علی علوی" required defaultValue={user.displayName || ''}/>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="address">آدرس</Label>
