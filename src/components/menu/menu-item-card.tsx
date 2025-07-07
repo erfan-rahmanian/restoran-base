@@ -11,6 +11,13 @@ interface MenuItemCardProps {
   item: MenuItem;
 }
 
+const filterTagTranslations: Record<string, string> = {
+  'vegetarian': 'گیاهی',
+  'spicy': 'تند',
+  'gluten-free': 'بدون گلوتن'
+}
+
+
 export function MenuItemCard({ item }: MenuItemCardProps) {
   const { addToCart } = useCart();
 
@@ -33,14 +40,14 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
         <div className="mt-3 flex gap-2 flex-wrap">
             {item.tags.map(tag => (
                 <Badge key={tag} variant="outline" className="capitalize">
-                    {tag.replace('-', ' ')}
+                    {filterTagTranslations[tag] || tag}
                 </Badge>
             ))}
         </div>
       </CardContent>
       <CardFooter className="flex justify-between items-center p-6 pt-0 mt-auto">
-        <p className="text-xl font-bold text-primary">${item.price.toFixed(2)}</p>
-        <Button onClick={() => addToCart(item)}>Add to Cart</Button>
+        <p className="text-xl font-bold text-primary">{item.price.toFixed(2)} تومان</p>
+        <Button onClick={() => addToCart(item)}>افزودن به سبد</Button>
       </CardFooter>
     </Card>
   );

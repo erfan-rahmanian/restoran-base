@@ -32,16 +32,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return [...prevCart, { menuItem: item, quantity }];
     });
     toast({
-        title: "Added to cart",
-        description: `${item.name} has been added to your cart.`,
+        title: "به سبد خرید اضافه شد",
+        description: `${item.name} به سبد خرید شما اضافه شد.`,
     })
   };
 
   const removeFromCart = (itemId: string) => {
     setCart((prevCart) => prevCart.filter((item) => item.menuItem.id !== itemId));
      toast({
-        title: "Item removed",
-        description: "An item has been removed from your cart.",
+        title: "مورد حذف شد",
+        description: "یک مورد از سبد خرید شما حذف شد.",
         variant: "destructive"
     })
   };
@@ -81,7 +81,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 export function useCart() {
   const context = useContext(AppContext);
   if (context === undefined) {
-    throw new Error('useCart must be used within an AppProvider');
+    throw new Error('useCart باید در داخل یک AppProvider استفاده شود');
   }
   return context;
 }

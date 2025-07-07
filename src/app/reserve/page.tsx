@@ -21,8 +21,8 @@ export default function ReservationPage() {
     e.preventDefault();
     if (!date || !time || !guests) {
       toast({
-        title: 'Incomplete Information',
-        description: 'Please select a date, time, and number of guests.',
+        title: 'اطلاعات ناقص',
+        description: 'لطفاً تاریخ، زمان و تعداد مهمانان را انتخاب کنید.',
         variant: 'destructive',
       });
       return;
@@ -38,13 +38,13 @@ export default function ReservationPage() {
                     <div className="mx-auto bg-green-100 rounded-full p-4 w-fit">
                         <CheckCircle className="h-16 w-16 text-green-600" />
                     </div>
-                    <CardTitle className="font-headline text-3xl mt-4">Reservation Confirmed!</CardTitle>
+                    <CardTitle className="font-headline text-3xl mt-4">رزرو تایید شد!</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p className="text-muted-foreground text-lg">
-                        Thank you for booking a table with us. We've sent a confirmation to your email and look forward to seeing you!
+                        از اینکه یک میز با ما رزرو کردید متشکریم. ما یک تاییدیه به ایمیل شما ارسال کرده‌ایم و مشتاق دیدار شما هستیم!
                     </p>
-                    <Button onClick={() => setIsReserved(false)} className="mt-8">Make Another Reservation</Button>
+                    <Button onClick={() => setIsReserved(false)} className="mt-8">رزرو مجدد</Button>
                 </CardContent>
             </Card>
         </div>
@@ -55,30 +55,30 @@ export default function ReservationPage() {
     <div className="min-h-[calc(100vh-8rem)] bg-secondary">
         <div className="container py-12 md:py-24">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="text-center md:text-left">
+            <div className="text-center md:text-start">
                 <PartyPopper className="h-12 w-12 text-primary mx-auto md:mx-0" />
-                <h1 className="text-4xl md:text-5xl font-bold font-headline mt-4">Book Your Table</h1>
+                <h1 className="text-4xl md:text-5xl font-bold font-headline mt-4">میز خود را رزرو کنید</h1>
                 <p className="text-lg text-muted-foreground mt-4 max-w-md mx-auto md:mx-0">
-                    Secure your spot for an unforgettable dining experience. Reserve your table in just a few clicks.
+                    جای خود را برای یک تجربه غذایی فراموش‌نشدنی امن کنید. میز خود را تنها با چند کلیک رزرو کنید.
                 </p>
             </div>
 
             <Card className="w-full max-w-md mx-auto shadow-2xl">
             <CardHeader>
-                <CardTitle className="font-headline text-2xl text-center">Reservation Details</CardTitle>
+                <CardTitle className="font-headline text-2xl text-center">جزئیات رزرو</CardTitle>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
                  <div className="grid gap-2">
-                    <Label>Full Name</Label>
-                    <Input placeholder="John Doe" required />
+                    <Label>نام کامل</Label>
+                    <Input placeholder="علی علوی" required />
                  </div>
                  <div className="grid gap-2">
-                    <Label>Email</Label>
-                    <Input type="email" placeholder="john.doe@example.com" required />
+                    <Label>ایمیل</Label>
+                    <Input type="email" placeholder="ali.alavi@example.com" required />
                  </div>
                 <div className="grid gap-2">
-                    <Label>Select Date</Label>
+                    <Label>انتخاب تاریخ</Label>
                     <Calendar
                         mode="single"
                         selected={date}
@@ -89,28 +89,28 @@ export default function ReservationPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label>Time</Label>
+                        <Label>زمان</Label>
                         <Select onValueChange={setTime} value={time}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Select time" />
+                                <SelectValue placeholder="انتخاب زمان" />
                             </SelectTrigger>
                             <SelectContent>
-                            {['12:00 PM', '1:00 PM', '2:00 PM', '6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM'].map(t => (
+                            {['۱۲:۰۰', '۱۳:۰۰', '۱۴:۰۰', '۱۸:۰۰', '۱۹:۰۰', '۲۰:۰۰', '۲۱:۰۰'].map(t => (
                                 <SelectItem key={t} value={t}>{t}</SelectItem>
                             ))}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="grid gap-2">
-                        <Label>Guests</Label>
+                        <Label>تعداد مهمانان</Label>
                          <Select onValueChange={setGuests} value={guests}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Guests" />
+                                <SelectValue placeholder="تعداد" />
                             </SelectTrigger>
                             <SelectContent>
                                 {[...Array(8)].map((_, i) => (
                                     <SelectItem key={i + 1} value={`${i + 1}`}>
-                                        {i + 1} guest{i > 0 ? 's' : ''}
+                                        {i + 1} نفر
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -118,7 +118,7 @@ export default function ReservationPage() {
                     </div>
                 </div>
                 <Button type="submit" size="lg" className="w-full">
-                    Book Table
+                    رزرو میز
                 </Button>
                 </form>
             </CardContent>

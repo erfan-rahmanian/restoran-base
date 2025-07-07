@@ -16,27 +16,27 @@ export default function SignupPage() {
     <div className="w-full min-h-[calc(100vh-8rem)] lg:grid lg:grid-cols-2">
        <div className="hidden bg-secondary lg:flex flex-col items-center justify-center p-12 text-center">
         <ChefHat className="h-20 w-20 text-primary" />
-        <h2 className="mt-6 text-4xl font-bold font-headline">Join Gastronome Hub</h2>
+        <h2 className="mt-6 text-4xl font-bold font-headline">به هاب غذا بپیوندید</h2>
         <p className="mt-4 text-lg text-muted-foreground">
-            Create an account to enjoy a seamless ordering experience, save your favorite dishes, and get exclusive offers.
+            برای لذت بردن از یک تجربه سفارش بی‌نظیر، ذخیره غذاهای مورد علاقه و دریافت پیشنهادات ویژه، یک حساب کاربری ایجاد کنید.
         </p>
       </div>
       <div className="flex items-center justify-center py-12">
         <Card className="mx-auto w-full max-w-sm">
           <CardHeader>
-            <CardTitle className="text-xl font-headline">Sign Up</CardTitle>
+            <CardTitle className="text-xl font-headline">ثبت نام</CardTitle>
             <CardDescription>
-              Enter your information to create an account
+              برای ایجاد حساب کاربری اطلاعات خود را وارد کنید
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
               <div className="grid gap-2">
-                  <Label htmlFor="full-name">Full Name</Label>
-                  <Input id="full-name" placeholder="Max Robinson" required />
+                  <Label htmlFor="full-name">نام کامل</Label>
+                  <Input id="full-name" placeholder="ماکس رابینسون" required />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">ایمیل</Label>
                 <Input
                   id="email"
                   type="email"
@@ -45,20 +45,20 @@ export default function SignupPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">رمز عبور</Label>
                 <Input id="password" type="password" />
               </div>
               <Button type="submit" className="w-full">
-                Create an account
+                ایجاد حساب کاربری
               </Button>
               <Button variant="outline" className="w-full">
-                Sign up with Google
+                ثبت نام با گوگل
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Already have an account?{" "}
+              قبلا حساب کاربری ساخته‌اید؟{" "}
               <Link href="/login" className="underline">
-                Sign in
+                وارد شوید
               </Link>
             </div>
           </CardContent>

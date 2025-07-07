@@ -10,45 +10,45 @@ export default function ContactPage() {
     return (
         <div className="container py-16 md:py-24">
             <div className="text-center mb-12">
-                <h1 className="text-4xl md:text-5xl font-bold font-headline">Get In Touch</h1>
-                <p className="text-lg text-muted-foreground mt-2">We'd love to hear from you. Whether you have a question, feedback, or a special request, feel free to reach out.</p>
+                <h1 className="text-4xl md:text-5xl font-bold font-headline">در تماس باشید</h1>
+                <p className="text-lg text-muted-foreground mt-2">خوشحال می‌شویم از شما بشنویم. چه سوال، بازخورد یا درخواست خاصی داشته باشید، با ما تماس بگیرید.</p>
             </div>
             <div className="grid md:grid-cols-2 gap-12">
                 <div>
                     <Card>
                         <CardHeader>
-                            <CardTitle className="font-headline text-2xl">Send us a Message</CardTitle>
+                            <CardTitle className="font-headline text-2xl">برای ما پیام بفرستید</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <form className="space-y-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name">Full Name</Label>
-                                    <Input id="name" placeholder="Your Name" />
+                                    <Label htmlFor="name">نام کامل</Label>
+                                    <Input id="name" placeholder="نام شما" />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="Your Email" />
+                                    <Label htmlFor="email">ایمیل</Label>
+                                    <Input id="email" type="email" placeholder="ایمیل شما" />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="message">Message</Label>
-                                    <Textarea id="message" placeholder="Your message..." />
+                                    <Label htmlFor="message">پیام</Label>
+                                    <Textarea id="message" placeholder="پیام شما..." />
                                 </div>
-                                <Button type="submit" className="w-full">Send Message</Button>
+                                <Button type="submit" className="w-full">ارسال پیام</Button>
                             </form>
                         </CardContent>
                     </Card>
                 </div>
                 <div className="space-y-8">
                     <div>
-                        <h2 className="font-headline text-2xl mb-4">Contact Information</h2>
+                        <h2 className="font-headline text-2xl mb-4">اطلاعات تماس</h2>
                         <div className="space-y-4 text-lg">
                             <div className="flex items-center gap-4">
                                 <MapPin className="h-6 w-6 text-primary"/>
-                                <span className="text-muted-foreground">123 Gastronomy St, Food City, FC 12345</span>
+                                <span className="text-muted-foreground">خیابان گاسترونومی ۱۲۳، شهر غذا</span>
                             </div>
                              <div className="flex items-center gap-4">
                                 <Phone className="h-6 w-6 text-primary"/>
-                                <span className="text-muted-foreground">(123) 456-7890</span>
+                                <span className="text-muted-foreground">۰۲۱-۱۲۳۴۵۶۷۸</span>
                             </div>
                              <div className="flex items-center gap-4">
                                 <Mail className="h-6 w-6 text-primary"/>
@@ -59,7 +59,7 @@ export default function ContactPage() {
                      <div className="rounded-lg overflow-hidden shadow-lg">
                         <Image
                         src="https://placehold.co/800x600.png"
-                        alt="Map showing restaurant location"
+                        alt="نقشه مکان رستوران"
                         width={800}
                         height={500}
                         className="w-full"

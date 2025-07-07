@@ -8,8 +8,8 @@ import { cn } from '@/lib/utils';
 import { fontBody, fontHeadline } from '@/lib/fonts';
 
 export const metadata: Metadata = {
-  title: 'Gastronome Hub',
-  description: 'A modern restaurant experience.',
+  title: 'هاب غذا',
+  description: 'یک تجربه رستورانی مدرن.',
   icons: {
     icon: '/favicon.ico',
   },
@@ -21,12 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="fa" dir="rtl" suppressHydrationWarning>
+      <head />
       <body className={cn('min-h-screen bg-background font-body antialiased', fontBody.variable, fontHeadline.variable)}>
         <AppProvider>
           <div className="relative flex min-h-dvh flex-col bg-background">

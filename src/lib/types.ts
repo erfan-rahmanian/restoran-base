@@ -4,7 +4,7 @@ export type MenuItem = {
   description: string;
   price: number;
   image: string;
-  category: 'Appetizer' | 'Main Course' | 'Dessert' | 'Beverage';
+  category: 'پیش غذا' | 'غذای اصلی' | 'دسر' | 'نوشیدنی';
   tags: ('vegetarian' | 'spicy' | 'gluten-free')[];
   aiHint?: string;
 };

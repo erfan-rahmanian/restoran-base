@@ -26,9 +26,9 @@ export function CartSheet({ isOpen, onOpenChange }: CartSheetProps) {
 
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
-      <SheetContent className="flex flex-col">
+      <SheetContent side="left" className="flex flex-col">
         <SheetHeader>
-          <SheetTitle className="font-headline text-2xl">Your Cart</SheetTitle>
+          <SheetTitle className="font-headline text-2xl">سبد خرید شما</SheetTitle>
         </SheetHeader>
         {cart.length > 0 ? (
           <>
@@ -44,9 +44,9 @@ export function CartSheet({ isOpen, onOpenChange }: CartSheetProps) {
                       className="rounded-md object-cover"
                       data-ai-hint={menuItem.aiHint}
                     />
-                    <div className="ml-4 flex-1">
+                    <div className="ms-4 flex-1">
                       <h3 className="font-semibold">{menuItem.name}</h3>
-                      <p className="text-primary font-medium">${menuItem.price.toFixed(2)}</p>
+                      <p className="text-primary font-medium">{menuItem.price.toFixed(2)} تومان</p>
                       <div className="flex items-center gap-2 mt-2">
                         <Button
                           variant="outline"
@@ -78,13 +78,13 @@ export function CartSheet({ isOpen, onOpenChange }: CartSheetProps) {
                 <div className="w-full space-y-4">
                     <Separator />
                     <div className="flex justify-between text-lg font-bold">
-                        <span>Subtotal</span>
-                        <span>${total.toFixed(2)}</span>
+                        <span>جمع کل</span>
+                        <span>{total.toFixed(2)} تومان</span>
                     </div>
                      <SheetClose asChild>
                         <Link href="/checkout" className="w-full">
                             <Button size="lg" className="w-full">
-                                Proceed to Checkout
+                                ادامه برای پرداخت
                             </Button>
                         </Link>
                     </SheetClose>
@@ -94,11 +94,11 @@ export function CartSheet({ isOpen, onOpenChange }: CartSheetProps) {
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-center">
             <ShoppingCart className="w-24 h-24 text-muted-foreground/50" />
-            <h3 className="text-xl font-semibold mt-4">Your cart is empty</h3>
-            <p className="text-muted-foreground mt-2">Add some delicious items from our menu!</p>
+            <h3 className="text-xl font-semibold mt-4">سبد خرید شما خالی است</h3>
+            <p className="text-muted-foreground mt-2">چند مورد خوشمزه از منوی ما اضافه کنید!</p>
              <SheetClose asChild>
                 <Link href="/menu" passHref>
-                    <Button className="mt-6">Explore Menu</Button>
+                    <Button className="mt-6">مشاهده منو</Button>
                 </Link>
              </SheetClose>
           </div>
