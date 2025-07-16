@@ -13,13 +13,22 @@ const firebaseConfig = {
 
 // Initialize Firebase
 let app: FirebaseApp;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApp();
+let auth: Auth;
+let db: Firestore;
+
+// This function ensures firebase is initialized only on the client side.
+function initializeFirebase() {
+    if (typeof window !== "undefined") {
+        if (!getApps().length) {
+            app = initializeApp(firebaseConfig);
+        } else {
+            app = getApp();
+        }
+        auth = getAuth(app);
+        db = getFirestore(app);
+    }
 }
 
-const auth: Auth = getAuth(app);
-const db: Firestore = getFirestore(app);
+initializeFirebase();
 
 export { app, auth, db };
