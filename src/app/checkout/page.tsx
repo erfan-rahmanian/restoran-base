@@ -16,7 +16,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 export default function CheckoutPage() {
-  const { cart, getCartTotal, user, loading } = useAppContext();
+  const { cart, getCartTotal, user, loading, clearCart } = useAppContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -35,9 +35,14 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (!loading && user && cart.length === 0) {
+       toast({
+        title: 'سبد خرید خالی است',
+        description: 'قبل از رفتن به صفحه پرداخت، چند کالا اضافه کنید',
+        variant: 'destructive',
+      });
       router.push('/menu');
     }
-  }, [cart, user, loading, router]);
+  }, [cart, user, loading, router, toast]);
 
 
   if (loading || !user) {
@@ -103,7 +108,8 @@ export default function CheckoutPage() {
           title: "سفارش ثبت شد!",
           description: "سفارش شما با موفقیت ثبت شد و در پایگاه داده ذخیره شد.",
       });
-
+      
+      clearCart();
       router.push('/confirmation');
 
     } catch (error) {

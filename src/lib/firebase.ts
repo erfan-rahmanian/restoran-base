@@ -1,6 +1,6 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -11,8 +11,22 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Firebase را راه‌اندازی کنید
-const app = !getApps().length && typeof window !== 'undefined' ? initializeApp(firebaseConfig) : (getApps().length > 0 ? getApp() : null);
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
 
-export const auth = app ? getAuth(app) : null;
-export const db = app ? getFirestore(app) : null;
+function initializeFirebase() {
+  if (typeof window !== 'undefined') {
+    if (!getApps().length) {
+      app = initializeApp(firebaseConfig);
+    } else {
+      app = getApp();
+    }
+    auth = getAuth(app);
+    db = getFirestore(app);
+  }
+}
+
+initializeFirebase();
+
+export { app, auth, db };

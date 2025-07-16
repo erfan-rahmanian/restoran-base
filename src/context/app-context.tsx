@@ -11,7 +11,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  updateProfile
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 
@@ -40,7 +41,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!auth) {
+    if (!auth || !db) {
       setLoading(false);
       return;
     };
@@ -120,6 +121,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!auth || !db) throw new Error("Firebase not initialized");
     const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
     const firebaseUser = userCredential.user;
+    
+    await updateProfile(firebaseUser, { displayName: name });
+
     const newUser: AppUser = {
       uid: firebaseUser.uid,
       email: firebaseUser.email,
