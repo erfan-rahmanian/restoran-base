@@ -12,7 +12,7 @@ const firebaseConfig = {
 };
 
 // Firebase را راه‌اندازی کنید
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const app = !getApps().length && typeof window !== 'undefined' ? initializeApp(firebaseConfig) : (getApps().length > 0 ? getApp() : null);
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const auth = app ? getAuth(app) : null;
+export const db = app ? getFirestore(app) : null;

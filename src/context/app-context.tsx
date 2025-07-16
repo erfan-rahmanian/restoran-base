@@ -40,8 +40,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    };
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
-      if (firebaseUser) {
+      if (firebaseUser && db) {
         const userRef = doc(db, 'users', firebaseUser.uid);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) {
@@ -113,6 +117,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const signUp = async (name: string, email: string, pass: string) => {
+    if (!auth || !db) throw new Error("Firebase not initialized");
     const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
     const firebaseUser = userCredential.user;
     const newUser: AppUser = {
@@ -125,15 +130,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const logIn = async (email: string, pass: string) => {
+    if (!auth) throw new Error("Firebase not initialized");
     await signInWithEmailAndPassword(auth, email, pass);
   };
 
   const googleSignIn = async () => {
+    if (!auth) throw new Error("Firebase not initialized");
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
   };
 
   const logOut = async () => {
+    if (!auth) throw new Error("Firebase not initialized");
     await signOut(auth);
   };
 

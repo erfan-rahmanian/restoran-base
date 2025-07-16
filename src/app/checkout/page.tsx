@@ -60,6 +60,15 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!db) {
+      toast({
+        title: 'خطا',
+        description: 'اتصال به پایگاه داده برقرار نیست.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
     const finalTotal = total * 1.09;
