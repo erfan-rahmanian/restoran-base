@@ -41,33 +41,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!auth || !db) {
-      setLoading(false);
-      return;
-    };
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
-      if (firebaseUser && db) {
-        const userRef = doc(db, 'users', firebaseUser.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          setUser(userSnap.data() as AppUser);
+    // This code runs only on the client
+    if (typeof window !== 'undefined') {
+      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+        if (firebaseUser) {
+          const userRef = doc(db, 'users', firebaseUser.uid);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            setUser(userSnap.data() as AppUser);
+          } else {
+            // for users signing in with Google for the first time
+            const newUser: AppUser = {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName,
+            };
+            await setDoc(userRef, newUser);
+            setUser(newUser);
+          }
         } else {
-          // برای کاربرانی که برای اولین بار با گوگل وارد می شوند، یک سند ایجاد کنید
-          const newUser: AppUser = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName: firebaseUser.displayName,
-          };
-          await setDoc(userRef, newUser);
-          setUser(newUser);
+          setUser(null);
         }
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
+        setLoading(false);
+      });
 
-    return () => unsubscribe();
+      return () => unsubscribe();
+    }
   }, []);
 
   const addToCart = (item: MenuItem, quantity = 1) => {
@@ -118,7 +117,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const signUp = async (name: string, email: string, pass: string) => {
-    if (!auth || !db) throw new Error("Firebase not initialized");
     const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
     const firebaseUser = userCredential.user;
     
@@ -134,18 +132,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const logIn = async (email: string, pass: string) => {
-    if (!auth) throw new Error("Firebase not initialized");
     await signInWithEmailAndPassword(auth, email, pass);
   };
 
   const googleSignIn = async () => {
-    if (!auth) throw new Error("Firebase not initialized");
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
   };
 
   const logOut = async () => {
-    if (!auth) throw new Error("Firebase not initialized");
     await signOut(auth);
   };
 
